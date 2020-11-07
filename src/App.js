@@ -11,6 +11,7 @@ import { API, Auth, Storage } from 'aws-amplify';
 import { listRecipes } from './graphql/queries';
 
 import CreateRecipe from './CreateRecipe';
+import Recipe from './Recipe';
 
 function Router() {
   /* create a couple of pieces of initial state */
@@ -72,6 +73,9 @@ function Router() {
                     </Link>
                   ))
                 }
+              </Route>
+              <Route path="/recipe/:id" >
+                <Recipe />
               </Route>
               <Route exact path="/myrecipes" >
                 {
