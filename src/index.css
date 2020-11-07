@@ -11,3 +11,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+:root {
+  --amplify-primary-color: #181d46;
+  --amplify-primary-tint: #363e95;
+  --amplify-primary-shade: #363e95;
+}
