@@ -1,6 +1,6 @@
 {
     "identityPoolName": "recipese6f98add_identitypool_e6f98add",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "recipee6f98add",
     "userPoolName": "recipese6f98add_userpool_e6f98add",
     "autoVerifiedAttributes": [

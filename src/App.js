@@ -7,8 +7,10 @@ import {
 } from "react-router-dom";
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { css } from 'emotion';
-import { API, Auth } from 'aws-amplify';
+import { API, Auth, Storage } from 'aws-amplify';
 import { listRecipes } from './graphql/queries';
+
+import CreateRecipe from './CreateRecipe';
 
 function Router() {
   /* create a couple of pieces of initial state */
@@ -24,6 +26,14 @@ function Router() {
     /* query the API, ask for 100 items */
     let recipeData = await API.graphql({ query: listRecipes, variables: { limit: 100 }});
     let recipesArray = recipeData.data.listRecipes.items;
+    /* map over the image keys in the recipes array, get signed image URLs for each image */
+    recipesArray = await Promise.all(recipesArray.map(async recipe => {
+      if (!recipe.image) return recipe;
+      const imageKey = await Storage.get(recipe.image);
+      recipe.image = imageKey;
+      return recipe;
+    }));
+
     /* update the recipe array in the local state */
     setRecipeState(recipesArray);
   }
@@ -54,6 +64,9 @@ function Router() {
                       <div key={recipe.id} className={recipeContainer}>
                         <h1 className={recipeTitleStyle}>{recipe.name}</h1>
                         <p>posted by @{recipe.owner}</p>
+                        { recipe.image && (
+                          <img alt="recipe" className={imageStyle} src={recipe.image} />
+                        )}
                         <p className={recipeInstructionsStyle}>{recipe.instructions}</p>
                       </div>
                     </Link>
@@ -66,6 +79,9 @@ function Router() {
                     <Link to={`/recipe/${recipe.id}`} className={linkStyle} key={recipe.id}>
                       <div key={recipe.id} className={recipeContainer}>
                         <h1 className={recipeTitleStyle}>{recipe.name}</h1>
+                        { recipe.image && (
+                          <img alt="recipe" className={imageStyle} src={recipe.image} />
+                        )}
                         <p className={recipeInstructionsStyle}>{recipe.instructions}</p>
                       </div>
                     </Link>
@@ -76,6 +92,13 @@ function Router() {
           </div>
           <AmplifySignOut />
         </HashRouter>
+        { showOverlay && (
+          <CreateRecipe
+            updateOverlayVisibility={updateOverlayVisibility}
+            updateRecipes={setRecipeState}
+            recipes={recipes}
+          />
+        )}
     </>
   );
 }
